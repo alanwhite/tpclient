@@ -1,6 +1,11 @@
-tpclient - tyls proxy client
+tpclient - tls proxy client
+=====
 
 Java doesn't know how to encrypt the connection to a HTTP proxy using TLS, this helper provides that.
+
+***
+
+## Background
 
 It's becoming more common for all connections to be encrypted, including to http proxies
 even if you're going to then use the CONNECT verb to create an end to end encrypted connection
@@ -9,6 +14,7 @@ over which the the CONNECT verb is sent along with any headers, does not use TLS
 
 curl started supporting this in 2016 https://daniel.haxx.se/blog/2016/11/26/https-proxy-with-curl/
 
+## Demo / Test Environment Setup
 To demonstrate what this project delivers consider the following scenario:
 
 tinyproxy is running listening for proxy requests on localhost:8888 but tinyproxy can't serve https natively so ... we need something in front of it that does that
@@ -27,6 +33,7 @@ brew services start tinyproxy gets it u and running on port localhost:8888 by de
 
 Ensure tinyproxy is working by directly proxing through it. The verbose logging shows the connection to localhost:8888 and the use of the CONNECT verb.
 
+```
 $ curl -v -x "localhost:8888" https://httpbin.org/ip
 *   Trying ::1...
 * TCP_NODELAY set
@@ -92,19 +99,23 @@ $ curl -v -x "localhost:8888" https://httpbin.org/ip
 }
 * Connection #0 to host localhost left intact
 * Closing connection 0
+```
 
 Edit /usr/local/etc/stunnel/stunnel.conf to look like
 
+```
 [tinyproxy]
 accept = 0.0.0.0:3128
 connect = 127.0.0.1:8888
 cert = /usr/local/etc/stunnel/stunnel.pem
 key = /usr/local/etc/stunnel/stunnel.pem
+```
 
 Run stunnel from the command line, it will detach and run in the background
 
 We can now ask curl to make an https connection to send the CONNECT verb, we tell it to use stunnel as the proxy (port 3128) which as we know from above provides the TLS negotiation and then forwards to tinyproxy
 
+```
 $ curl -v --proxy-cacert /usr/local/etc/stunnel/stunnel.pem -x "https://localhost:3128" https://httpbin.org/ip
 *   Trying ::1...
 * TCP_NODELAY set
@@ -197,6 +208,7 @@ $ curl -v --proxy-cacert /usr/local/etc/stunnel/stunnel.pem -x "https://localhos
 }
 * Connection #0 to host localhost left intact
 * Closing connection 0
+```
 
 We've now installed and configured the secure HTTP CONNECT solution, and proven it's working with curl. Next is to show how to make Java used it.
 
