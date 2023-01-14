@@ -29,6 +29,8 @@ public class TLSProxiedSocketFactory extends SSLSocketFactory {
 	private String tlsProxyHost;
 	private int tlsProxyPort;
 	private SSLSocketFactory sslSocketFactory;
+	
+	private List<String> proxyHeaders = new ArrayList<>();
 
 	public TLSProxiedSocketFactory(String tlsProxyHost, int tlsProxyPort) throws NoSuchAlgorithmException {
 		this.tlsProxyHost = tlsProxyHost;
@@ -84,6 +86,10 @@ public class TLSProxiedSocketFactory extends SSLSocketFactory {
 		} 
 	}
 	
+	public boolean setProxyHeader(String header) {
+		return proxyHeaders.add(header);
+	}
+	
 	@Override
 	public Socket createSocket(Socket s, String host, int port, boolean autoClose) throws IOException {
 
@@ -101,6 +107,9 @@ public class TLSProxiedSocketFactory extends SSLSocketFactory {
 		//					remoteSocket.getOutputStream().write(auth.getBytes());
 		//				}
 
+		for( String header : proxyHeaders ) 
+			proxy.getOutputStream().write(( header + "\n" ).getBytes());
+		
 		proxy.getOutputStream().write("\n".getBytes());
 
 		var reader = new BufferedReader(
