@@ -212,4 +212,12 @@ $ curl -v --proxy-cacert /usr/local/etc/stunnel/stunnel.pem -x "https://localhos
 
 We've now installed and configured the secure HTTP CONNECT solution, and proven it's working with curl. Next is to show how to make Java used it.
 
+## Java Implementation
+
+### Direct Unencrypted Proxy
+We prove we can use standard core Java libraries to talk directly to tinyproxy running on port 8888, i.e. bypassing stunnel and any need to encrypt. This test ensure tinyproxy is running correctly.
+
+### Encrypted Proxy
+We use our custom socket factory to transparently connect via an encrypted proxy, in our case provided by stunnel front-ending tinyproxy. In this instance there is no use of the native Java proxy capabilities, we don't, and can't use those because they lack the ability to make a TLS connection to the proxy.
+
 
