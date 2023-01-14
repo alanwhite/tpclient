@@ -33,6 +33,7 @@ public class TLSProxiedSocketFactory extends SSLSocketFactory {
 	public TLSProxiedSocketFactory(String tlsProxyHost, int tlsProxyPort) throws NoSuchAlgorithmException {
 		this.tlsProxyHost = tlsProxyHost;
 		this.tlsProxyPort = tlsProxyPort;
+		
 		this.sslSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 	}
 	
@@ -117,9 +118,12 @@ public class TLSProxiedSocketFactory extends SSLSocketFactory {
 			len = line.length();
 		}
 
-		// we now need to do the TLS negotiation with the proxied endpoint .....
+		// wrap the established connection in another SSL socket
+		SSLSocketFactory regularFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+		SSLSocket targetSocket = (SSLSocket)regularFactory.createSocket(proxy, host, port, true);
 		
-		return proxy;
+		return targetSocket;
+
 	}
 
 	@Override
