@@ -25,7 +25,7 @@ App --- https ----> stunnel --- http ----> tinyproxy --- tcp ----> target host
 
 App opens an https connection, which is terminated by stunnel which passes all IO to tinyproxy, so the App can write the CONNECT verb, tinyproxy then makes a TCP connection to the target host, and sends the 200 OK back all the way to the App.
 
-Useful blog that describes exactly what we're settign up here - https://bencane.com/2017/04/15/using-stunnel-and-tinyproxy-to-hide-http-traffic/
+Useful blog that describes what we're setting up here - https://bencane.com/2017/04/15/using-stunnel-and-tinyproxy-to-hide-http-traffic/
 
 On macOS brew install stunnel and brew install tinyproxy work can be used to set up the demo environment
 
